@@ -1,0 +1,65 @@
+Mono path[0] = 'C:/Users/ibrahim/Documents/DontTouchTheWire/clip_Data/Managed'
+Mono path[1] = 'C:/Users/ibrahim/Documents/DontTouchTheWire/clip_Data/Mono'
+Mono config path = 'C:/Users/ibrahim/Documents/DontTouchTheWire/clip_Data/Mono/etc'
+PlayerConnection initialized from C:/Users/ibrahim/Documents/DontTouchTheWire/clip_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55045
+Multi-casting "[IP] 192.168.1.101 [Port] 55045 [Flags] 2 [Guid] 1561308992 [EditorId] 3332993586 [Version] 1048832 [Id] WindowsPlayer(iakay) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [192.168.1.101:55045]
+Initialize engine version: 5.3.5f1 (960ebf59018a)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce 920M      (ID=0x1299)
+    Vendor:   NVIDIA
+    VRAM:     1997 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+- Completed reload, in  0.166 seconds
+Platform assembly: C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\ibrahim\Documents\DontTouchTheWire\clip_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.631929 ms
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 32.120739 ms
+System memory in use before: 15.9 MB.
+System memory in use after: 15.7 MB.
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 247.
+Total: 0.584564 ms (FindLiveObjects: 0.101237 ms CreateObjectMapping: 0.027058 ms MarkObjects: 0.438540 ms  DeleteObjects: 0.015862 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.268279 ms
+System memory in use before: 15.7 MB.
+System memory in use after: 15.7 MB.
+
+Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 247.
+Total: 0.328905 ms (FindLiveObjects: 0.033590 ms CreateObjectMapping: 0.012129 ms MarkObjects: 0.272454 ms  DeleteObjects: 0.009330 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 13.145009 ms
+System memory in use before: 15.8 MB.
+System memory in use after: 15.7 MB.
+
+Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 247.
+Total: 0.715193 ms (FindLiveObjects: 0.136227 ms CreateObjectMapping: 0.031724 ms MarkObjects: 0.524848 ms  DeleteObjects: 0.020527 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 43.023129 ms
+System memory in use before: 16.1 MB.
+System memory in use after: 15.7 MB.
+
+Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 247.
+Total: 0.806634 ms (FindLiveObjects: 0.314909 ms CreateObjectMapping: 0.024726 ms MarkObjects: 0.446937 ms  DeleteObjects: 0.018661 ms)
+
+Setting up 1 worker threads for Enlighten.
+  Thread -> id: 1d90 -> priority: 1 
