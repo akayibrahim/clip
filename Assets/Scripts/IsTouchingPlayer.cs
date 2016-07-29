@@ -11,8 +11,14 @@ public class IsTouchingPlayer : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject != null && other.gameObject.name == "gold(Clone)") {
-			gameController.addScoreForCollectGold ();
+		if (other.gameObject != null && other.gameObject.name == "goldOne(Clone)") {
+			gameController.addScoreForCollectGold (1);
+			Destroy (other.gameObject);
+		} else if (other.gameObject != null && other.gameObject.name == "goldTwo(Clone)") {
+			gameController.addScoreForCollectGold (2);
+			Destroy (other.gameObject);
+		} else if (other.gameObject != null && other.gameObject.name == "goldThree(Clone)") {
+			gameController.addScoreForCollectGold (3);
 			Destroy (other.gameObject);
 		}
 	}

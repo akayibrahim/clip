@@ -16,7 +16,7 @@ public class DrawLine : MonoBehaviour {
 	private float secondX = 5;
 	private float thirdX = 10;
 	private float lineWidth = 0.15f;
-	private float colliderWidth = 0.1f;
+	private float colliderWidth = 0.15f;
 	private float nextX;
 	private float nextY;
 	private float z = 0;
@@ -99,7 +99,7 @@ public class DrawLine : MonoBehaviour {
 
 	private void addColliderToLine(float startX, float startY, float endX, float endY) {
 		EdgeCollider2D col = lineGO.AddComponent<EdgeCollider2D> ();
-		col.offset = new Vector2 (colliderWidth, 0);
+	    col.offset = new Vector2 (colliderWidth, 0);
 		col.transform.parent = line.transform;
 		col.isTrigger = true;
 		Vector2[] pointsArray = new Vector2[]{
