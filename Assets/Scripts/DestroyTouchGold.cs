@@ -13,7 +13,11 @@ public class DestroyTouchGold : MonoBehaviour {
 	{
 		if (other.gameObject.name == "line") {
 			Destroy(gameObject);
-			gameController.CreateGold ();
+			if (gameObject.name == "ice(Clone)")
+				gameController.addDeserveToIce ();
+			if (gameObject.name == "sun(Clone)")
+				gameController.addDeserveToSun ();
+			gameController.instantiateGold ();
 		}
 	}
 

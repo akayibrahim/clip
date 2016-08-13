@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-
+using StartApp;
+using AppTrackerUnitySDK;
 
 public class GameController : MonoBehaviour {
 
@@ -10,7 +11,7 @@ public class GameController : MonoBehaviour {
 	public GameObject shareGO;
 	public GameObject bestScoreGO;
 	public GameObject bestScoreTextGO;
-	public GameObject clipGO;
+	public GameObject clipTextGO;
 	public GameObject arrowUp;
 	public GameObject arrowDown;
 	public GameObject tapToStart;
@@ -32,6 +33,14 @@ public class GameController : MonoBehaviour {
 	public GameObject descGO;
 	public GameObject pointGO;
 	public Text pointText;
+	public GameObject iceGO;
+	public GameObject sunGO;
+	public GameObject sunOrIceTimeGO;
+	public Text sunOrIceTimeText;
+	public GameObject clipGO;
+	public GameObject newGO;
+	public AudioSource audioClip;
+	public GameObject newHighScoreGO;
 
 	private float moveSpeed = 2f;
 	public float upDownSpeed = 2f;
@@ -46,7 +55,9 @@ public class GameController : MonoBehaviour {
 	private bool pressingArrowDown;
 	private bool pressingArrowUp;
 	private bool isStart;
+	private bool isGrowUpOrShrink = true;
 	private bool wait = false;
+	private bool showSunIceTime = false;
 
 	// private int score = 0;
 	private int scoreCount = 0;
@@ -54,18 +65,43 @@ public class GameController : MonoBehaviour {
 	private int soundToggle = 1; // 1 open, 0 close
 	private int soundOn = 1; 
 	private int soundOff = 0;
+	private int iceDeserveCount = 1;
+	private int sunDeserveCount = 1;
+	private int newBestScore = 0; // 1 true, 0 false
 
-	private string bestScorePrefsText = "BestScore";
+	private string bestScorePrefsText = "BestScore_3";
+	private string newPrefsText = "NEW_BEST_SCORE";
+	private string moveXSpeed = "MOVE_X_SPEED_3";
 	private string soundToggleText = "SoundToggle";
 	private string subject = "CLIP - Are u ready to CHALLENGE !!!";
 	private string body = "PLAY THIS AWESOME GAME. GET IT ON THE PLAYSTORE AT LINK";
 
+	AudioClip iceClip;
+	AudioClip sunClip;
+	AudioClip goldClip;
+
 	void Start () {
-		highScore = PlayerPrefs.GetInt(bestScorePrefsText);
-		soundToggle = PlayerPrefs.GetInt (soundToggleText);
+		getFromSession ();
 		setGOVisibleOnPlay ();
 		addGoldRandomly ();
+		addIceOrSunRandomly ();
 		openCloseSound (false);
+		LoadClips ();
+		loadAds ();
+	}
+
+	private void LoadClips() {
+		audioClip = gameObject.AddComponent<AudioSource> ();
+		iceClip = (AudioClip) Resources.Load("Music/ice");
+		sunClip = (AudioClip) Resources.Load("Music/sun");
+		goldClip = (AudioClip) Resources.Load("Music/gold");
+	}
+
+	private void getFromSession() {
+		highScore = PlayerPrefs.GetInt(bestScorePrefsText);
+		soundToggle = PlayerPrefs.GetInt (soundToggleText);
+		moveSpeed = (PlayerPrefs.GetFloat (moveXSpeed) != 0) ? PlayerPrefs.GetFloat (moveXSpeed) : moveSpeed;
+		newBestScore = (PlayerPrefs.GetInt (newPrefsText) != 0) ? PlayerPrefs.GetInt (newPrefsText) : 0;
 	}
 
 	void Update() {
@@ -78,11 +114,26 @@ public class GameController : MonoBehaviour {
 			if (Input.GetKey(KeyCode.DownArrow) || pressingArrowDown)
 				movePlayerDown ();
 			moveByFinger ();
+			sunOrIceTimeGO.SetActive (showSunIceTime);
+			growingAndShring ();
 		}
+		setBestScore ();
+		addDeserveToIceAndSun ();
+	}
 
+	private void addDeserveToIceAndSun() {
+		if ((scoreCount + 1) % 25 == 0) {
+			iceDeserveCount = iceDeserveCount != 0 ? iceDeserveCount++ : iceDeserveCount;
+			sunDeserveCount = sunDeserveCount != 0 ? sunDeserveCount++ : sunDeserveCount;
+		}
+	}
+
+	private void setBestScore() {
 		if(scoreCount > highScore) {
 			highScore = scoreCount;
 			PlayerPrefs.SetInt (bestScorePrefsText, highScore);
+			PlayerPrefs.SetInt (newPrefsText, 1);
+			newHighScoreGO.SetActive (wait);
 		}
 		bestScoreText = bestScoreTextGO.GetComponent<Text> ();
 		bestScoreText.text = highScore.ToString();
@@ -98,6 +149,7 @@ public class GameController : MonoBehaviour {
 		scoreCount += point;
 		pointText.text = "+" + point;
 		StartCoroutine (waitOff());
+		playClip (goldClip);
 	}
 		
 	public void startGame() {
@@ -118,9 +170,13 @@ public class GameController : MonoBehaviour {
 		objectListActive.Add (arrowUp);
 		objectListActive.Add (arrowDown);
 		objectListActive.Add (pauseGO);
+		objectListActive.Add (sunOrIceTimeGO);
 		setVisibility (objectListActive, false);
-	}
 
+		PlayerPrefs.SetFloat (moveXSpeed, moveSpeed + float.Parse(scoreText.text) / 3000);
+
+		showAds (true);
+	}
 
 	public void restart() {	
 		Application.LoadLevel (Application.loadedLevel); 
@@ -161,6 +217,10 @@ public class GameController : MonoBehaviour {
 		objectList.Add (pauseGO);
 		objectList.Add (pointGO);
 		setVisibility (objectList, false);
+		if (newBestScore == 1) {
+			newGO.SetActive (true);
+			PlayerPrefs.SetInt (newPrefsText, 0);
+		}
 	}
 
 	public void setGOVisibleOnStart() {
@@ -170,12 +230,13 @@ public class GameController : MonoBehaviour {
 		objectList.Add (shareGO);
 		objectList.Add (bestScoreGO);
 		objectList.Add (bestScoreTextGO);
-		objectList.Add (clipGO);
+		objectList.Add (clipTextGO);
 		objectList.Add (tapToStart);
 		objectList.Add (quitBackGO);
 		objectList.Add (soundGO);
 		objectList.Add (noSoundGO);
 		objectList.Add (descGO);
+		objectList.Add (newGO);
 		setVisibility (objectList, false);
 
 		List<GameObject> objectListActive = new List<GameObject> ();
@@ -194,23 +255,97 @@ public class GameController : MonoBehaviour {
 	}
 
 	void addGoldRandomly() {
-		InvokeRepeating("CreateGold", one, 1.7f);
+		InvokeRepeating("instantiateGold", one, 1.5f);
 	}
 
-	public void CreateGold() {
-		if (isStart) {
-			float goldY = Random.Range (-goldYRange, goldYRange);
-			float goldX = Random.Range (goldXStartRange, goldXEndRange);
-			float newGoldX = player.transform.position.x + goldX;
-			Vector3 pos = new Vector3 (newGoldX, goldY, zero);
-			int randNum = Random.Range (0, 9);
-			if (scoreCount > 100 && randNum % 7 == 0)
-				Instantiate(goldThreeGO, pos, Quaternion.identity);
-			else if(scoreCount > 50 && (randNum % 5 == 0 || randNum % 6 == 0))
-				Instantiate (goldTwoGO, pos, Quaternion.identity);
-			else
-				Instantiate (goldOneGO, pos, Quaternion.identity);
+	void addIceOrSunRandomly() {
+		InvokeRepeating("instantiateIceAndSun", 5f, 5f);
+	}
+
+	private Vector3 getPos() {
+		float goldY = Random.Range (-goldYRange, goldYRange);
+		float goldX = Random.Range (goldXStartRange, goldXEndRange);
+		float newGoldX = player.transform.position.x + goldX;
+		Vector3 pos = new Vector3 (newGoldX, goldY, zero);
+		return pos;
+	}
+
+	private void instantiateIceAndSun() {
+		if (isGrowUpOrShrink && isStart) {
+			int randNumSunIce = Random.Range (0, 99);
+			if (randNumSunIce <= 50 && sunDeserveCount > 0) {
+				Instantiate (sunGO, getPos(), Quaternion.identity);
+				--sunDeserveCount;
+			} else if (randNumSunIce > 50 && iceDeserveCount > 0) {
+				Instantiate (iceGO, getPos(), Quaternion.identity);
+				--iceDeserveCount;
+			}
+			isGrowUpOrShrink = false;
 		}
+	}
+
+	public void addDeserveToIce() {
+		iceDeserveCount++;
+		isGrowUpOrShrink = true;
+	}
+
+	public void addDeserveToSun() {
+		sunDeserveCount++;
+		isGrowUpOrShrink = true;
+	}
+
+	public void sunIceEffect(bool grow) {
+		if (grow)
+			playClip (sunClip);
+		else
+			playClip (iceClip);
+		StartCoroutine (waitSunOrIce (grow));
+	}
+
+	private void playClip(AudioClip clip) {
+		audioClip.PlayOneShot (clip);
+	}
+		
+	IEnumerator waitSunOrIce (bool grow) {
+		growing = grow;
+		shrinking = !grow;
+		yield return new WaitForSeconds (3f);
+		shrinking = false;
+		growing = false;
+		showSunIceTime = true;
+		for(int i= 10; i > 0; i--) {
+			sunOrIceTimeText.text = i.ToString();
+			yield return new WaitForSeconds (1f);
+		}
+		growing = !grow;
+		shrinking = grow;
+		showSunIceTime = false;
+		yield return new WaitForSeconds (3f);
+		shrinking = false;
+		growing = false;
+		isGrowUpOrShrink = true;
+	}
+
+	bool shrinking = false;
+	bool growing = false;
+
+	public void growingAndShring() {
+		if (shrinking)
+			clipGO.transform.localScale -= Vector3.one * Time.deltaTime * 0.05f;
+		else if(growing)
+			clipGO.transform.localScale += Vector3.one * Time.deltaTime * 0.05f;
+	}
+
+	public void instantiateGold() {
+		if (!isStart)
+			return;
+		int randNum = Random.Range (0, 9);
+		if (scoreCount > 100 && randNum % 7 == 0)
+			Instantiate(goldThreeGO, getPos(), Quaternion.identity);
+		else if(scoreCount > 50 && (randNum % 5 == 0 || randNum % 6 == 0))
+			Instantiate (goldTwoGO, getPos(), Quaternion.identity);
+		else
+			Instantiate (goldOneGO, getPos(), Quaternion.identity);
 	}
 
 	public void quit(){	
@@ -226,7 +361,7 @@ public class GameController : MonoBehaviour {
 	private Vector2 leftFingerMovedBy = Vector2.zero;
 
 	private void moveByFinger() {
-		float slideMagnitudeX  = zero;
+		// float slideMagnitudeX  = zero;
 		float slideMagnitudeY = zero;
 
 		if (Input.touchCount == 1) {
@@ -237,7 +372,7 @@ public class GameController : MonoBehaviour {
 				// leftFingerLastPos = Vector2.zero;
 				leftFingerMovedBy = Vector2.zero;
 
-				slideMagnitudeX = zero;
+				// slideMagnitudeX = zero;
 				slideMagnitudeY = zero;
 
 				// record start position
@@ -250,7 +385,7 @@ public class GameController : MonoBehaviour {
 				leftFingerPos = touch.position;
 
 				// slide horz
-				slideMagnitudeX = leftFingerMovedBy.x / Screen.width;
+				// slideMagnitudeX = leftFingerMovedBy.x / Screen.width;
 
 				// slide vert
 				slideMagnitudeY = leftFingerMovedBy.y / Screen.height;
@@ -259,10 +394,10 @@ public class GameController : MonoBehaviour {
 				// leftFingerLastPos = leftFingerPos;
 				leftFingerPos = touch.position;
 
-				slideMagnitudeX = zero;
+				// slideMagnitudeX = zero;
 				slideMagnitudeY = zero;
 			} else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled) {
-				slideMagnitudeX = zero;
+				// slideMagnitudeX = zero;
 				slideMagnitudeY = zero;
 			}
 			player.transform.Translate (zero, slideMagnitudeY * fingerTraslateClipSpeed * Time.deltaTime, zero);
@@ -306,5 +441,35 @@ public class GameController : MonoBehaviour {
 		wait = true;
 		yield return new WaitForSeconds (waitTime);
 		wait = false;
+	}
+
+	private void loadAds() {
+		#if UNITY_IOS
+			StartAppWrapperiOS.loadAd ();
+		#endif
+
+		#if UNITY_ANDROID
+			StartAppWrapper.init();
+			StartAppWrapper.loadAd();
+			AppTrackerAndroid.startSession("YOUR_APP_API_KEY", true);
+			AppTrackerAndroid.loadModuleToCache("inapp"); // video
+		#endif
+	}
+
+	private void showAds(bool isStartAppAds) {
+		#if UNITY_IOS
+			if(isStart)
+				StartAppWrapperiOS.showAd ();
+		#endif
+
+		#if UNITY_ANDROID
+			if (isStartAppAds) {
+				StartAppWrapper.showAd();
+				StartAppWrapper.loadAd();
+			} else {
+				if(AppTrackerAndroid.isAdReady("inapp")) // video
+					AppTrackerAndroid.loadModule("inapp"); // video
+			}
+		#endif
 	}
 }

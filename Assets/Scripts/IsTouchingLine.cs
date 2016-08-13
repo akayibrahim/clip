@@ -17,6 +17,12 @@ public class IsTouchingLine : MonoBehaviour {
 		}
 	}
 
+	void onGUI () {
+		GUI.Box (new Rect ((Screen.width / 2) - 90, Screen.height / 2, 210, 70), "Do u want watch ads for continue?");
+		GUI.Button (new Rect ((Screen.width / 2) - 60, (Screen.height / 2) + 30, 70, 30), "Yes");
+		GUI.Button (new Rect ((Screen.width / 2) + 20, (Screen.height / 2) + 30, 70, 30), "No");
+ 	}
+
 	private void getGameController() {
 		GameObject gameControllerObject = GameObject.FindWithTag ("GameController");
 		if (gameControllerObject != null)

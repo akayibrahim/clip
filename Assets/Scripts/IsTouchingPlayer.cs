@@ -20,6 +20,12 @@ public class IsTouchingPlayer : MonoBehaviour {
 		} else if (other.gameObject != null && other.gameObject.name == "goldThree(Clone)") {
 			gameController.addScoreForCollectGold (3);
 			Destroy (other.gameObject);
+		} else if (other.gameObject != null && other.gameObject.name == "sun(Clone)") {
+			gameController.sunIceEffect (true);
+			Destroy (other.gameObject);
+		} else if (other.gameObject != null && other.gameObject.name == "ice(Clone)") {
+			gameController.sunIceEffect (false);
+			Destroy (other.gameObject);
 		}
 	}
 

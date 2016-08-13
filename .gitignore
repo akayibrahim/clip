@@ -44,3 +44,6 @@ ehthumbs.db
 /clip_ios/*
 /clip_android/*
 /wiredance_Data/*
+/Assets/Plugins/*
+/Assets/AppTracker/*
+/Assets/StreamingAssets/*
