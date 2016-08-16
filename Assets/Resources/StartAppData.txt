@@ -1,2 +1,2 @@
-applicationId=207268516
-returnAds=true
+applicationId=107364536
+returnAds=false

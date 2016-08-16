@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using StartApp;
 using AppTrackerUnitySDK;
+using StartApp;
+using System.IO;
 
 public class GameController : MonoBehaviour {
 
@@ -58,6 +59,7 @@ public class GameController : MonoBehaviour {
 	private bool isGrowUpOrShrink = true;
 	private bool wait = false;
 	private bool showSunIceTime = false;
+	private bool isGameOver = false;
 
 	// private int score = 0;
 	private int scoreCount = 0;
@@ -68,17 +70,23 @@ public class GameController : MonoBehaviour {
 	private int iceDeserveCount = 1;
 	private int sunDeserveCount = 1;
 	private int newBestScore = 0; // 1 true, 0 false
+	private int gameOverCount = 0;
 
-	private string bestScorePrefsText = "BestScore_3";
+	private string bestScorePrefsText = "BestScore_4";
 	private string newPrefsText = "NEW_BEST_SCORE";
 	private string moveXSpeed = "MOVE_X_SPEED_3";
 	private string soundToggleText = "SoundToggle";
-	private string subject = "CLIP - Are u ready to CHALLENGE !!!";
-	private string body = "PLAY THIS AWESOME GAME. GET IT ON THE PLAYSTORE AT LINK";
+	private string subject = "CLIP - READY TO CHALLENGE !!!";
+	private string body = "NOW YOUR TURN. MY SCORE IS ";
+	private string body2 = " Download Link : https://play.google.com/apps/testing/com.iakay/com";
+	private string gameOverCountText = "GAME_OVER_COUNT";
+	string destination;
 
 	AudioClip iceClip;
 	AudioClip sunClip;
 	AudioClip goldClip;
+	AudioClip gameOverClip;
+	AudioClip successClip;
 
 	void Start () {
 		getFromSession ();
@@ -95,6 +103,12 @@ public class GameController : MonoBehaviour {
 		iceClip = (AudioClip) Resources.Load("Music/ice");
 		sunClip = (AudioClip) Resources.Load("Music/sun");
 		goldClip = (AudioClip) Resources.Load("Music/gold");
+		gameOverClip = (AudioClip) Resources.Load("Music/gameover");
+		successClip = (AudioClip) Resources.Load("Music/success");
+		Texture2D img = (Texture2D) Resources.Load ("desc");
+		destination = Path.Combine(Application.persistentDataPath, System.DateTime.Now.ToString("yyyy-MM-dd-HHmmss") + ".png");
+		byte[] bytes = img.EncodeToPNG ();
+		File.WriteAllBytes(destination, bytes);
 	}
 
 	private void getFromSession() {
@@ -102,6 +116,7 @@ public class GameController : MonoBehaviour {
 		soundToggle = PlayerPrefs.GetInt (soundToggleText);
 		moveSpeed = (PlayerPrefs.GetFloat (moveXSpeed) != 0) ? PlayerPrefs.GetFloat (moveXSpeed) : moveSpeed;
 		newBestScore = (PlayerPrefs.GetInt (newPrefsText) != 0) ? PlayerPrefs.GetInt (newPrefsText) : 0;
+		gameOverCount = (PlayerPrefs.GetInt (gameOverCountText) != 0) ? PlayerPrefs.GetInt (gameOverCountText) : 0;
 	}
 
 	void Update() {
@@ -119,6 +134,8 @@ public class GameController : MonoBehaviour {
 		}
 		setBestScore ();
 		addDeserveToIceAndSun ();
+		if (Input.GetKey (KeyCode.Escape))
+			quit ();
 	}
 
 	private void addDeserveToIceAndSun() {
@@ -128,8 +145,17 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	private int bestScoreCount = 0;
+	private void playBestScoreClip() {
+		if (bestScoreCount == 0) {
+			playClip (successClip);
+			bestScoreCount++;
+		}
+	}
+
 	private void setBestScore() {
 		if(scoreCount > highScore) {
+			playBestScoreClip ();
 			highScore = scoreCount;
 			PlayerPrefs.SetInt (bestScorePrefsText, highScore);
 			PlayerPrefs.SetInt (newPrefsText, 1);
@@ -157,25 +183,33 @@ public class GameController : MonoBehaviour {
 	}
 
 	public void GameOver() {
-		isStart = false;
+		if (!isGameOver) {
+			playClip (gameOverClip);
+			isStart = false;
 
-		List<GameObject> objectList = new List<GameObject> ();
-		objectList.Add (gameOverGO);
-		objectList.Add (restartGO);
-		objectList.Add (quitGO);
-		objectList.Add (quitBackGO);
-		setVisibility (objectList, true);
+			List<GameObject> objectList = new List<GameObject> ();
+			objectList.Add (gameOverGO);
+			objectList.Add (restartGO);
+			objectList.Add (quitGO);
+			objectList.Add (quitBackGO);
+			setVisibility (objectList, true);
 
-		List<GameObject> objectListActive = new List<GameObject> ();
-		objectListActive.Add (arrowUp);
-		objectListActive.Add (arrowDown);
-		objectListActive.Add (pauseGO);
-		objectListActive.Add (sunOrIceTimeGO);
-		setVisibility (objectListActive, false);
+			List<GameObject> objectListActive = new List<GameObject> ();
+			objectListActive.Add (arrowUp);
+			objectListActive.Add (arrowDown);
+			objectListActive.Add (pauseGO);
+			objectListActive.Add (sunOrIceTimeGO);
+			setVisibility (objectListActive, false);
 
-		PlayerPrefs.SetFloat (moveXSpeed, moveSpeed + float.Parse(scoreText.text) / 3000);
+			PlayerPrefs.SetFloat (moveXSpeed, moveSpeed + float.Parse(scoreText.text) / 3000);
 
-		showAds (true);
+			PlayerPrefs.SetInt (gameOverCountText, ++gameOverCount);
+			isGameOver = true;
+			if (gameOverCount % 6 == 0)
+				showAds (true);
+			else if (gameOverCount % 3 == 0)
+				showAds (false);
+		}
 	}
 
 	public void restart() {	
@@ -348,7 +382,7 @@ public class GameController : MonoBehaviour {
 			Instantiate (goldOneGO, getPos(), Quaternion.identity);
 	}
 
-	public void quit(){	
+	public void quit() {	
 		Application.Quit ();
 	}
 
@@ -425,9 +459,13 @@ public class GameController : MonoBehaviour {
 		AndroidJavaClass intentClass = new AndroidJavaClass("android.content.Intent");
 		AndroidJavaObject intentObject = new AndroidJavaObject("android.content.Intent");
 		intentObject.Call<AndroidJavaObject>("setAction", intentClass.GetStatic<string>("ACTION_SEND"));
-		intentObject.Call<AndroidJavaObject>("setType", "text/plain");
+		AndroidJavaClass uriClass = new AndroidJavaClass("android.net.Uri");
+		AndroidJavaObject uriObject = uriClass.CallStatic<AndroidJavaObject>("parse", "file://" + destination);
+		intentObject.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_STREAM"), uriObject);
+		intentObject.Call<AndroidJavaObject>("setType", "image/png");
 		intentObject.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_SUBJECT"), subject);
-		intentObject.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_TEXT"), body);
+		intentObject.Call<AndroidJavaObject>("putExtra", intentClass.GetStatic<string>("EXTRA_TEXT"), body  + highScore.ToString() 
+			+ body2);
 		AndroidJavaClass unity = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 		AndroidJavaObject currentActivity = unity.GetStatic<AndroidJavaObject>("currentActivity");
 		currentActivity.Call("startActivity", intentObject);
@@ -443,32 +481,30 @@ public class GameController : MonoBehaviour {
 		wait = false;
 	}
 
+	private string leadBoltAdsType = "inapp"; // video
 	private void loadAds() {
 		#if UNITY_IOS
-			StartAppWrapperiOS.loadAd ();
 		#endif
 
 		#if UNITY_ANDROID
 			StartAppWrapper.init();
 			StartAppWrapper.loadAd();
-			AppTrackerAndroid.startSession("YOUR_APP_API_KEY", true);
-			AppTrackerAndroid.loadModuleToCache("inapp"); // video
+			AppTrackerAndroid.startSession("I4PadYNJDmW7y6cYMNO3Qrzgb8qvCspT", true);
+			AppTrackerAndroid.loadModuleToCache(leadBoltAdsType); // 
 		#endif
 	}
 
-	private void showAds(bool isStartAppAds) {
+	private void showAds(bool isLeadBoltAds) {
 		#if UNITY_IOS
-			if(isStart)
-				StartAppWrapperiOS.showAd ();
 		#endif
 
 		#if UNITY_ANDROID
-			if (isStartAppAds) {
-				StartAppWrapper.showAd();
-				StartAppWrapper.loadAd();
+			if (isLeadBoltAds) {
+				if(AppTrackerAndroid.isAdReady(leadBoltAdsType))
+					AppTrackerAndroid.loadModule(leadBoltAdsType);
 			} else {
-				if(AppTrackerAndroid.isAdReady("inapp")) // video
-					AppTrackerAndroid.loadModule("inapp"); // video
+				StartAppWrapper.showAd();	
+				StartAppWrapper.loadAd();
 			}
 		#endif
 	}
