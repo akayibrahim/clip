@@ -139,9 +139,10 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void addDeserveToIceAndSun() {
-		if ((scoreCount + 1) % 25 == 0) {
-			iceDeserveCount = iceDeserveCount != 0 ? iceDeserveCount++ : iceDeserveCount;
-			sunDeserveCount = sunDeserveCount != 0 ? sunDeserveCount++ : sunDeserveCount;
+		if ((scoreCount + 1) % 20 == 0) {
+			iceDeserveCount = iceDeserveCount == 0 ? 1 : iceDeserveCount;
+			sunDeserveCount = sunDeserveCount == 0 ? 1 : sunDeserveCount;
+			isGrowUpOrShrink =  true;
 		}
 	}
 
@@ -293,7 +294,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	void addIceOrSunRandomly() {
-		InvokeRepeating("instantiateIceAndSun", 5f, 5f);
+		InvokeRepeating("instantiateIceAndSun", 2.5f, 2.5f);
 	}
 
 	private Vector3 getPos() {
@@ -304,16 +305,17 @@ public class GameController : MonoBehaviour {
 		return pos;
 	}
 
+	private bool willCreateSunOrIce = true;
 	private void instantiateIceAndSun() {
-		if (isGrowUpOrShrink && isStart) {
-			int randNumSunIce = Random.Range (0, 99);
-			if (randNumSunIce <= 50 && sunDeserveCount > 0) {
+		if (isGrowUpOrShrink && isStart && (!growing && !shrinking && !showSunIceTime)) {
+			if (willCreateSunOrIce && sunDeserveCount > 0) {
 				Instantiate (sunGO, getPos(), Quaternion.identity);
 				--sunDeserveCount;
-			} else if (randNumSunIce > 50 && iceDeserveCount > 0) {
+			} else if (!willCreateSunOrIce && iceDeserveCount > 0) {
 				Instantiate (iceGO, getPos(), Quaternion.identity);
 				--iceDeserveCount;
 			}
+			willCreateSunOrIce = !willCreateSunOrIce;
 			isGrowUpOrShrink = false;
 		}
 	}
