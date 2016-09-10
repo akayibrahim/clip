@@ -78,7 +78,7 @@ public class GameController : MonoBehaviour {
 	private string soundToggleText = "SoundToggle";
 	private string subject = "CLIP - READY TO CHALLENGE !!!";
 	private string body = "NOW YOUR TURN. MY SCORE IS ";
-	private string body2 = " Download Link : https://play.google.com/apps/testing/com.iakay/com";
+	private string body2 = " Download Link : https://play.google.com/store/apps/details?id=com.iakay.clip";
 	private string gameOverCountText = "GAME_OVER_COUNT";
 	string destination;
 
@@ -87,6 +87,8 @@ public class GameController : MonoBehaviour {
 	AudioClip goldClip;
 	AudioClip gameOverClip;
 	AudioClip successClip;
+	AudioClip tikClip;
+	AudioClip backToOldClip;
 
 	void Start () {
 		getFromSession ();
@@ -105,6 +107,8 @@ public class GameController : MonoBehaviour {
 		goldClip = (AudioClip) Resources.Load("Music/gold");
 		gameOverClip = (AudioClip) Resources.Load("Music/gameover");
 		successClip = (AudioClip) Resources.Load("Music/success");
+		tikClip = (AudioClip) Resources.Load("Music/tik");
+		backToOldClip = (AudioClip) Resources.Load("Music/backToOld");
 		Texture2D img = (Texture2D) Resources.Load ("desc");
 		destination = Path.Combine(Application.persistentDataPath, System.DateTime.Now.ToString("yyyy-MM-dd-HHmmss") + ".png");
 		byte[] bytes = img.EncodeToPNG ();
@@ -139,10 +143,11 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void addDeserveToIceAndSun() {
-		if ((scoreCount + 1) % 20 == 0) {
+		if ((scoreCount + 1) % 25 == 0) {
 			iceDeserveCount = iceDeserveCount == 0 ? 1 : iceDeserveCount;
 			sunDeserveCount = sunDeserveCount == 0 ? 1 : sunDeserveCount;
-			isGrowUpOrShrink =  true;
+			if(!showSunIceTime)
+				isGrowUpOrShrink =  true;
 		}
 	}
 
@@ -294,7 +299,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	void addIceOrSunRandomly() {
-		InvokeRepeating("instantiateIceAndSun", 2.5f, 2.5f);
+		InvokeRepeating("instantiateIceAndSun", 4f, 4f);
 	}
 
 	private Vector3 getPos() {
@@ -307,35 +312,44 @@ public class GameController : MonoBehaviour {
 
 	private bool willCreateSunOrIce = true;
 	private void instantiateIceAndSun() {
-		if (isGrowUpOrShrink && isStart && (!growing && !shrinking && !showSunIceTime)) {
+		if (isGrowUpOrShrink && isStart && !showSunIceTime) {
 			if (willCreateSunOrIce && sunDeserveCount > 0) {
 				Instantiate (sunGO, getPos(), Quaternion.identity);
 				--sunDeserveCount;
+				sunIceCommonParams (false);
 			} else if (!willCreateSunOrIce && iceDeserveCount > 0) {
 				Instantiate (iceGO, getPos(), Quaternion.identity);
 				--iceDeserveCount;
+				sunIceCommonParams (false);
 			}
-			willCreateSunOrIce = !willCreateSunOrIce;
-			isGrowUpOrShrink = false;
 		}
 	}
 
 	public void addDeserveToIce() {
 		iceDeserveCount++;
-		isGrowUpOrShrink = true;
+		sunIceCommonParams (true);
 	}
 
 	public void addDeserveToSun() {
 		sunDeserveCount++;
-		isGrowUpOrShrink = true;
+		sunIceCommonParams (true);
+	}
+
+	private void sunIceCommonParams(bool isGrowUpOrShrink) {
+		isGrowUpOrShrink = isGrowUpOrShrink;
+		willCreateSunOrIce = !willCreateSunOrIce;
 	}
 
 	public void sunIceEffect(bool grow) {
+		sunIcePlayClip (grow);
+		StartCoroutine (waitSunOrIce (grow));
+	}
+
+	private void sunIcePlayClip(bool grow) {
 		if (grow)
 			playClip (sunClip);
 		else
 			playClip (iceClip);
-		StartCoroutine (waitSunOrIce (grow));
 	}
 
 	private void playClip(AudioClip clip) {
@@ -345,18 +359,22 @@ public class GameController : MonoBehaviour {
 	IEnumerator waitSunOrIce (bool grow) {
 		growing = grow;
 		shrinking = !grow;
-		yield return new WaitForSeconds (3f);
-		shrinking = false;
-		growing = false;
 		showSunIceTime = true;
-		for(int i= 10; i > 0; i--) {
+		for(int i= 10; i >= 0; i--) {
+			playClip (tikClip);
+			if (i == 8) {
+				shrinking = false;
+				growing = false;
+			}
 			sunOrIceTimeText.text = i.ToString();
 			yield return new WaitForSeconds (1f);
+			if (i == 2) {
+				playClip (backToOldClip);
+				growing = !grow;
+				shrinking = grow;
+			}
 		}
-		growing = !grow;
-		shrinking = grow;
 		showSunIceTime = false;
-		yield return new WaitForSeconds (3f);
 		shrinking = false;
 		growing = false;
 		isGrowUpOrShrink = true;
