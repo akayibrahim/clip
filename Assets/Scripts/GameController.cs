@@ -23,7 +23,8 @@ public class GameController : MonoBehaviour {
 	private Text bestScoreText;
 	public GameObject goldGO;
 	public GameObject pauseGO;
-
+	public GameObject levelText;
+	public GameObject level;
 	private float moveSpeed = 2f;
 	public float upDownSpeed = 2f;
 	float oldGoldX;
@@ -86,13 +87,15 @@ public class GameController : MonoBehaviour {
 		objectList.Add (gameOverGO);
 		objectList.Add (restartGO);
 		objectList.Add (quitGO);
-		objectList.Add (quitBackGO);
+		objectList.Add (quitBackGO);		
 		setVisibility (objectList, true);
 
 		List<GameObject> objectListActive = new List<GameObject> ();
 		objectListActive.Add (arrowUp);
 		objectListActive.Add (arrowDown);
 		objectListActive.Add (pauseGO);
+		objectListActive.Add (level);
+		objectListActive.Add (levelText);
 		setVisibility (objectListActive, false);
 	}
 
@@ -134,7 +137,7 @@ public class GameController : MonoBehaviour {
 		objectList.Add (scoreGO);
 		objectList.Add (arrowUp);
 		objectList.Add (arrowDown);
-		objectList.Add (pauseGO);
+		objectList.Add (pauseGO);		
 		setVisibility (objectList, false);
 	}
 
@@ -153,7 +156,9 @@ public class GameController : MonoBehaviour {
 		objectListActive.Add (scoreGO);
 		objectListActive.Add (pauseGO);
 		// objectListActive.Add (arrowUp);
-		// objectListActive.Add (arrowDown);
+		// objectListActive.Add (arrowDown);		
+		objectListActive.Add (level);
+		objectListActive.Add (levelText);	
 		setVisibility (objectListActive, true);
 	}
 
