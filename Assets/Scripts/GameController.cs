@@ -2,23 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 	
-	public GameObject playGO;
-	public GameObject shareGO;
 	public GameObject bestScoreGO;
 	public GameObject bestScoreTextGO;
-	public GameObject clipGO;
-	public GameObject arrowUp;
-	public GameObject arrowDown;
-	public GameObject tapToStart;
-	public GameObject gameOverGO;
 	public GameObject scoreGO;
 	public GameObject player;
-	public GameObject restartGO;
-	public GameObject quitGO;
-	public GameObject quitBackGO;
 	public Text scoreText;
 	private Text bestScoreText;
 	public GameObject goldGO;
@@ -41,8 +32,8 @@ public class GameController : MonoBehaviour {
 	private string highScorePrefsText = "HighScore";
 
 	void Start () {
-		highScore = PlayerPrefs.GetInt(highScorePrefsText);
-		setGOVisibleOnPlay ();
+		isStart = true;
+		highScore = PlayerPrefs.GetInt(highScorePrefsText);		
 		addGoldRandomly ();
 	}
 
@@ -76,29 +67,9 @@ public class GameController : MonoBehaviour {
 	}
 		
 	public void startGame() {
+		SceneManager.LoadScene("game", LoadSceneMode.Single);
 		isStart = true;
 	}
-
-	public void GameOver() {
-		gameOver = true;
-		isStart = false;
-
-		List<GameObject> objectList = new List<GameObject> ();
-		objectList.Add (gameOverGO);
-		objectList.Add (restartGO);
-		objectList.Add (quitGO);
-		objectList.Add (quitBackGO);		
-		setVisibility (objectList, true);
-
-		List<GameObject> objectListActive = new List<GameObject> ();
-		objectListActive.Add (arrowUp);
-		objectListActive.Add (arrowDown);
-		objectListActive.Add (pauseGO);
-		objectListActive.Add (level);
-		objectListActive.Add (levelText);
-		setVisibility (objectListActive, false);
-	}
-
 
 	public void restart() {	
 		Application.LoadLevel (Application.loadedLevel);
@@ -128,46 +99,6 @@ public class GameController : MonoBehaviour {
 		player.transform.position += Vector3.down * upDownSpeed * Time.deltaTime;
 	}
 
-	public void setGOVisibleOnPlay() {
-		List<GameObject> objectList = new List<GameObject> ();
-		objectList.Add (gameOverGO);
-		objectList.Add (restartGO);
-		objectList.Add (quitGO);
-		objectList.Add (quitBackGO);
-		objectList.Add (scoreGO);
-		objectList.Add (arrowUp);
-		objectList.Add (arrowDown);
-		objectList.Add (pauseGO);		
-		setVisibility (objectList, false);
-	}
-
-	public void setGOVisibleOnStart() {
-		List<GameObject> objectList = new List<GameObject> ();
-		objectList.Add (gameOverGO);
-		objectList.Add (playGO);
-		objectList.Add (shareGO);
-		objectList.Add (bestScoreGO);
-		objectList.Add (bestScoreTextGO);
-		objectList.Add (clipGO);
-		objectList.Add (tapToStart);
-		setVisibility (objectList, false);
-
-		List<GameObject> objectListActive = new List<GameObject> ();
-		objectListActive.Add (scoreGO);
-		objectListActive.Add (pauseGO);
-		// objectListActive.Add (arrowUp);
-		// objectListActive.Add (arrowDown);		
-		objectListActive.Add (level);
-		objectListActive.Add (levelText);	
-		setVisibility (objectListActive, true);
-	}
-
-	private void setVisibility(List<GameObject> objectList, bool visibility) {
-		foreach (GameObject obj in objectList) {
-			obj.SetActive (visibility);
-		}
-	}
-
 	void addGoldRandomly() {
 		InvokeRepeating("CreateGold", 1f, 1.7f);
 	}
@@ -182,10 +113,6 @@ public class GameController : MonoBehaviour {
 			oldGoldX = player.transform.position.x + goldX;
 
 		}
-	}
-
-	public void quit(){	
-		Application.Quit ();
 	}
 
 	public void pause(){

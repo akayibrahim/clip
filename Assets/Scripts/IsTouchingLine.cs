@@ -12,8 +12,7 @@ public class IsTouchingLine : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject != null && other.gameObject.name == "Clip") {
-			other.gameObject.GetComponent<Rigidbody2D> ().isKinematic = false;
-			gameController.GameOver ();
+			other.gameObject.GetComponent<Rigidbody2D> ().isKinematic = false;			
 		}
 	}
 
