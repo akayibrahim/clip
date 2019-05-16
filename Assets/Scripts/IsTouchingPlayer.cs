@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class IsTouchingPlayer : MonoBehaviour {
 
@@ -13,7 +14,7 @@ public class IsTouchingPlayer : MonoBehaviour {
 	{
 		if (other.gameObject != null && other.gameObject.name == "gold(Clone)") {
 			gameController.addScoreForCollectGold ();
-			Destroy (other.gameObject);
+			Destroy (other.gameObject);			
 		}
 	}
 

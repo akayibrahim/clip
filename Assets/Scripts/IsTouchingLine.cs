@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using System;
 
 public class IsTouchingLine : MonoBehaviour {
 
@@ -12,8 +14,13 @@ public class IsTouchingLine : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject != null && other.gameObject.name == "Clip") {
-			other.gameObject.GetComponent<Rigidbody2D> ().isKinematic = false;			
+			other.gameObject.GetComponent<Rigidbody2D> ().isKinematic = false;
+			Invoke("loadEnd", 1.0f);	
 		}
+	}
+
+    public void loadEnd(){
+		SceneManager.LoadScene("end", LoadSceneMode.Single);			
 	}
 
 	private void getGameController() {

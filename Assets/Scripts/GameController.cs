@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour {
 	
-	public GameObject bestScoreGO;
-	public GameObject bestScoreTextGO;
 	public GameObject scoreGO;
 	public GameObject player;
 	public Text scoreText;
@@ -53,8 +51,6 @@ public class GameController : MonoBehaviour {
 			highScore = scoreCount;
 			PlayerPrefs.SetInt (highScorePrefsText, highScore);
 		}
-		bestScoreText = bestScoreTextGO.GetComponent<Text> ();
-		bestScoreText.text = highScore.ToString();
 	}
 
 	public void addScore() {
@@ -69,10 +65,6 @@ public class GameController : MonoBehaviour {
 	public void startGame() {
 		SceneManager.LoadScene("game", LoadSceneMode.Single);
 		isStart = true;
-	}
-
-	public void restart() {	
-		Application.LoadLevel (Application.loadedLevel);
 	}
 
 	public void arrowDownUp() {
