@@ -22,7 +22,8 @@ public class StartController : MonoBehaviour {
 	private string highScorePrefsText = "HighScore";
 
 	void Start () {
-		highScore = PlayerPrefs.GetInt(highScorePrefsText);				
+		highScore = PlayerPrefs.GetInt(highScorePrefsText);			
+		bestScoreText.text = highScore.ToString();			
 	}
 
 	void Update() {

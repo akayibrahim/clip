@@ -10,12 +10,12 @@ public class DrawLine : MonoBehaviour {
 	private Vector3 endPos;
 	private Vector3 pos;
 
-	private float rangeOfY = 0.7f;
+	private float rangeOfY = 0.5f;
 	private float firstY = 0;
 	private float firstX = -15;
 	private float secondX = 5;
 	private float thirdX = 10;
-	private float lineWidth = 0.15f;
+	private float lineWidth = 0.1f;
 	private float colliderWidth = 0.1f;
 	private float nextX;
 	private float nextY;
@@ -46,7 +46,7 @@ public class DrawLine : MonoBehaviour {
 	}
 
 	private void createLineGameObject() {
-		lineGO = new GameObject("DrawLines");
+		lineGO = new GameObject("DrawLines");		
 		if (lineGO == null)
 			Debug.Log ("Can not find 'lineGO' script");
 	}
