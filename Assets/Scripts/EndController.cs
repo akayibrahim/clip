@@ -19,6 +19,7 @@ public class EndController : MonoBehaviour {
 	private int highScore = 0;
 
 	private string highScorePrefsText = "HighScore";
+	private string scorePrefsText = "Score";
 
 	void Start () {
 		highScore = PlayerPrefs.GetInt(highScorePrefsText);		
@@ -27,6 +28,7 @@ public class EndController : MonoBehaviour {
 	void Update() {
 		bestScoreText = bestScoreTextGO.GetComponent<Text> ();
 		bestScoreText.text = highScore.ToString();
+		scoreText.text = PlayerPrefs.GetInt(scorePrefsText).ToString();
 	}
 
 	public void restart() {	

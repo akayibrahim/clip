@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour {
 	public GameObject pauseGO;
 	public GameObject levelText;
 	public GameObject level;
-	private float moveSpeed = 2f;
+	private float moveSpeed = 0.3f;
 	public float upDownSpeed = 2f;
 	float oldGoldX;
 
@@ -22,22 +22,28 @@ public class GameController : MonoBehaviour {
 	private bool pressingArrowUp;
 	private bool gameOver = false;
 	private bool isStart;
-
 	private int score = 0;
 	private int scoreCount = 0;
 	private int highScore = 0;
-
 	private string highScorePrefsText = "HighScore";
-
+	private string scorePrefsText = "Score";
+	private int levelOfGame = 1;
+	private string levelPrefsText = "Level";
+	private DrawLine drawline;
 	void Start () {
 		isStart = true;
-		highScore = PlayerPrefs.GetInt(highScorePrefsText);		
+		highScore = PlayerPrefs.GetInt(highScorePrefsText);
+		//PlayerPrefs.SetInt(levelPrefsText, 1);//remove
+		if (!PlayerPrefs.HasKey(levelPrefsText)) {
+			PlayerPrefs.SetInt(levelPrefsText, 1);
+		}
+		PlayerPrefs.SetInt(scorePrefsText, scoreCount);
 		addGoldRandomly ();
 	}
 
 	void Update() {
 		if (isStart) {
-			player.transform.position += Vector3.right * (moveSpeed + (scoreCount / 50)) * Time.deltaTime;
+			player.transform.position += Vector3.right * (moveSpeed + levelOfGame) * Time.deltaTime;
 			addScore ();
 
 			if (Input.GetKey (KeyCode.UpArrow) || pressingArrowUp)
@@ -51,15 +57,28 @@ public class GameController : MonoBehaviour {
 			highScore = scoreCount;
 			PlayerPrefs.SetInt (highScorePrefsText, highScore);
 		}
+		levelOfGame = PlayerPrefs.GetInt(levelPrefsText);
+		level.GetComponent<Text> ().text = levelOfGame.ToString();
+		
 	}
 
 	public void addScore() {
 		scoreText.text = scoreCount.ToString() ;
+		PlayerPrefs.SetInt(scorePrefsText, scoreCount);
 		// ((score++) % 50 == 0 ? (scoreCount++).ToString() : scoreCount.ToString()) ;
 	}
 
 	public void addScoreForCollectGold() {
 		scoreCount += 1;
+		if ( scoreCount % 30 == 0 ) {
+			levelOfGame++;
+			PlayerPrefs.SetInt(levelPrefsText, levelOfGame);
+			GameObject gameControllerObject = GameObject.FindWithTag ("DrawLine");
+			if (gameControllerObject != null) {
+				drawline = gameControllerObject.GetComponent<DrawLine>();
+				drawline.rangeOfY += 0.2f;
+			}
+		}
 	}
 		
 	public void startGame() {
