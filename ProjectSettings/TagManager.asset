@@ -10,6 +10,8 @@ TagManager:
   - Fire
   - ResetButton
   - Ellipse
+  - DirectionalLight
+  - LevelFadeImage
   layers:
   - Default
   - TransparentFX

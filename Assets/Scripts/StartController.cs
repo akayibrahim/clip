@@ -15,17 +15,14 @@ public class StartController : MonoBehaviour {
 	public Text scoreText;
 	private Text bestScoreText;
 	public GameObject level;
-	private int score = 0;
 	private int scoreCount = 0;
 	private int highScore = 0;
-	
-	private string highScorePrefsText = "HighScore";
-	private string levelPrefsText = "Level";
 	void Start () {
-		highScore = PlayerPrefs.GetInt(highScorePrefsText);			
+		PlayerPrefs.SetInt(Constants.scorePrefsText, 0);
+		highScore = PlayerPrefs.GetInt(Constants.highScorePrefsText);			
 		bestScoreText = bestScoreTextGO.GetComponent<Text> ();
 		bestScoreText.text = highScore.ToString();		
-		level.GetComponent<Text>().text = PlayerPrefs.GetInt(levelPrefsText).ToString();	
+		level.GetComponent<Text>().text = PlayerPrefs.GetInt(Constants.levelPrefsText).ToString();	
 	}
 
 	void Update() {

@@ -18,7 +18,7 @@ public class IsTouchingLine : MonoBehaviour
         {
             //cameraShaker.Shake(1f);
             cameraShaker.setShake(0.5f, 1.5f);
-            other.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;
+            other.gameObject.GetComponent<Rigidbody2D>().isKinematic = false;            
             Invoke("loadEnd", 1.5f);
         }
     }

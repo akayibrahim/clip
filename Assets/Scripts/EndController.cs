@@ -18,20 +18,18 @@ public class EndController : MonoBehaviour {
 	private Text bestScoreText;
 	private int highScore = 0;
 
-	private string highScorePrefsText = "HighScore";
-	private string scorePrefsText = "Score";
-
 	void Start () {
-		highScore = PlayerPrefs.GetInt(highScorePrefsText);		
+		highScore = PlayerPrefs.GetInt(Constants.highScorePrefsText);		
 	}
 
 	void Update() {
 		bestScoreText = bestScoreTextGO.GetComponent<Text> ();
 		bestScoreText.text = highScore.ToString();
-		scoreText.text = PlayerPrefs.GetInt(scorePrefsText).ToString();
+		scoreText.text = PlayerPrefs.GetInt(Constants.scorePrefsText).ToString();
 	}
 
 	public void restart() {	
+		PlayerPrefs.SetInt(Constants.scorePrefsText, 0);
 		SceneManager.LoadScene("game", LoadSceneMode.Single);		
 	}
 

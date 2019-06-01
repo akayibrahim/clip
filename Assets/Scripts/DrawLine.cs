@@ -31,7 +31,7 @@ public class DrawLine : MonoBehaviour
     private string levelPref = "Level";
     private int level;
     private int initialLevel;
-    private float multiple = 3/100;
+    private float multiple = 1/100;
     void Start()
     {
         createLineGameObject();
